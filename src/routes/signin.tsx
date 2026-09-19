@@ -1,12 +1,12 @@
 import { Link, createFileRoute, redirect } from '@tanstack/react-router'
 import { useState } from 'react'
-import { AuthDivider, AuthShell, ProblemBox, useFinishAuth, validateAuthSearch } from '#/components/account/auth'
+import { AuthDivider, AuthShell, ProblemBox, safeRedirect, useFinishAuth, validateAuthSearch } from '#/components/account/auth'
 import { signIn, signUp } from '#/server/fns'
 
 export const Route = createFileRoute('/signin')({
   validateSearch: validateAuthSearch,
   beforeLoad: ({ context, search }) => {
-    if (context.user) throw redirect({ href: search.redirect ?? '/' })
+    if (context.user) throw redirect({ href: safeRedirect(search.redirect) ?? '/' })
   },
   head: () => ({ meta: [{ title: 'Amazon.clone Sign-In' }] }),
   component: SignIn,

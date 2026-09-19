@@ -5,10 +5,11 @@ import { Logo } from '#/components/Header'
 export const safeRedirect = (v: unknown): string | undefined =>
   typeof v === 'string' && /^\/(?![/\\])/.test(v) && !/[\r\n]/.test(v) ? v : undefined
 
-export const validateAuthSearch = (s: Record<string, unknown>): { redirect?: string } => {
-  const redirect = safeRedirect(s.redirect)
-  return redirect ? { redirect } : {}
-}
+// The key is always returned: validated search is merged over the raw query, so
+// omitting it would let an unsafe value through untouched.
+export const validateAuthSearch = (s: Record<string, unknown>): { redirect?: string } => ({
+  redirect: safeRedirect(s.redirect),
+})
 
 /** After sign-in the root context is stale, so refresh it before leaving the page. */
 export function useFinishAuth(target?: string) {

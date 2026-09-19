@@ -1,12 +1,12 @@
 import { Link, createFileRoute, redirect } from '@tanstack/react-router'
 import { useState } from 'react'
-import { AuthShell, FieldError, ProblemBox, useFinishAuth, validateAuthSearch } from '#/components/account/auth'
+import { AuthShell, FieldError, ProblemBox, safeRedirect, useFinishAuth, validateAuthSearch } from '#/components/account/auth'
 import { signUp } from '#/server/fns'
 
 export const Route = createFileRoute('/register')({
   validateSearch: validateAuthSearch,
   beforeLoad: ({ context, search }) => {
-    if (context.user) throw redirect({ href: search.redirect ?? '/' })
+    if (context.user) throw redirect({ href: safeRedirect(search.redirect) ?? '/' })
   },
   head: () => ({ meta: [{ title: 'Amazon.clone Registration' }] }),
   component: Register,
