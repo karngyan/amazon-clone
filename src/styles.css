@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Amazon Ember", Arial, "Helvetica Neue", Helvetica, sans-serif;
+  --color-nav: #131921;
+  --color-subnav: #232f3e;
+  --color-footer: #37475a;
+  --color-ink: #0f1111;
+  --color-muted: #565959;
+  --color-link: #007185;
+  --color-link-hover: #c7511f;
+  --color-buy: #ffd814;
+  --color-buy-hover: #f7ca00;
+  --color-now: #ffa41c;
+  --color-now-hover: #fa8900;
+  --color-star: #de7921;
+  --color-deal: #cc0c39;
+  --color-ok: #007600;
+  --color-search: #febd69;
+  --color-page: #e3e6e6;
+  --color-line: #d5d9d9;
+}
+
+html {
+  color: var(--color-ink);
+  background: #fff;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; text-decoration: none; }
+
+:focus-visible {
+  outline: 2px solid #007185;
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+@layer components {
+  .link { color: var(--color-link); cursor: pointer; }
+  .link:hover { color: var(--color-link-hover); text-decoration: underline; }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    border-radius: 999px; padding: 7px 16px; font-size: 13px; line-height: 18px;
+    cursor: pointer; white-space: nowrap; border: 1px solid transparent;
+    transition: background-color 120ms ease, box-shadow 120ms ease, transform 80ms ease;
+    box-shadow: 0 2px 5px 0 rgba(213, 217, 217, 0.5);
+  }
+  .btn:active { transform: scale(0.98); }
+  .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+  .btn-buy { background: var(--color-buy); border-color: #fcd200; }
+  .btn-buy:hover:not(:disabled) { background: var(--color-buy-hover); }
+  .btn-now { background: var(--color-now); border-color: #ff8f00; }
+  .btn-now:hover:not(:disabled) { background: var(--color-now-hover); }
+  .btn-plain { background: #fff; border-color: var(--color-line); }
+  .btn-plain:hover:not(:disabled) { background: #f7fafa; }
+  .btn-block { width: 100%; }
+
+  .card { background: #fff; border: 1px solid var(--color-line); border-radius: 8px; }
+
+  .field {
+    width: 100%; border: 1px solid #888c8c; border-radius: 4px; padding: 6px 8px;
+    font-size: 14px; line-height: 20px; background: #fff;
+    box-shadow: 0 1px 2px rgba(15, 17, 17, 0.15) inset;
+  }
+  .field:focus { outline: none; border-color: #007185; box-shadow: 0 0 0 3px #c8f3fa, 0 1px 2px rgba(15,17,17,.15) inset; }
+
+  .nav-hit { border: 1px solid transparent; border-radius: 2px; padding: 6px 8px; cursor: pointer; }
+  .nav-hit:hover, .nav-hit:focus-visible { border-color: #fff; outline: none; }
+
+  .rail { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: thin; padding-bottom: 8px; }
+  .rail > * { scroll-snap-align: start; flex: none; }
+
+  .clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .clamp-4 { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+
+  .img-well { background: #f7f8f8; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .img-well img { mix-blend-mode: multiply; object-fit: contain; width: 100%; height: 100%; }
+}
+
+@keyframes pop-in { from { opacity: 0; transform: translateY(-6px) scale(0.98); } to { opacity: 1; transform: none; } }
+.pop-in { animation: pop-in 140ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+@keyframes slide-in { from { transform: translateX(-100%); } to { transform: none; } }
+.slide-in { animation: slide-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+.fade-in { animation: fade-in 180ms ease-out; }
+@keyframes toast-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+.toast-in { animation: toast-in 200ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; scroll-behavior: auto !important; }
+}
