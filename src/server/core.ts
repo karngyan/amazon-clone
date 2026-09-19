@@ -1,5 +1,5 @@
 import { env } from 'cloudflare:workers'
-import { deleteCookie, getCookie, setCookie } from '@tanstack/react-start/server'
+import { deleteCookie, getCookie, getRequestHeader, setCookie } from '@tanstack/react-start/server'
 import type { Product, ProductCard, User } from '#/lib/types'
 
 export const db = () => env.DB
@@ -15,6 +15,27 @@ const token = () => {
 /** Session id from the cookie, without creating one (reads must stay cheap). */
 export const peekSid = () => getCookie(SID) ?? null
 
+export const clientIp = () => getRequestHeader('cf-connecting-ip') ?? 'local'
+
+/**
+ * Fixed-window rate limit backed by D1. Returns false once `limit` hits have
+ * landed in the current window. Public demo, so every write path goes through this.
+ */
+export async function allow(key: string, limit: number, windowSeconds: number) {
+  const now = Math.floor(Date.now() / 1000)
+  const bucket = Math.floor(now / windowSeconds)
+  const row = await db()
+    .prepare(
+      `INSERT INTO rate_limits (key, bucket, n, expires) VALUES (?, ?, 1, ?)
+       ON CONFLICT(key, bucket) DO UPDATE SET n = n + 1 RETURNING n`,
+    )
+    .bind(key, bucket, (bucket + 1) * windowSeconds)
+    .first<{ n: number }>()
+  // Opportunistic cleanup keeps the table tiny without a cron.
+  if (Math.random() < 0.02) await db().prepare('DELETE FROM rate_limits WHERE expires < ?').bind(now).run()
+  return (row?.n ?? 1) <= limit
+}
+
 /** Session id, minted on first write (add to cart, sign in). */
 export async function ensureSid() {
   const existing = peekSid()
@@ -22,6 +43,7 @@ export async function ensureSid() {
     const row = await db().prepare('SELECT id FROM sessions WHERE id = ?').bind(existing).first()
     if (row) return existing
   }
+  if (!(await allow(`session:${clientIp()}`, 40, 3600))) throw new Error('Too many requests. Please try again later.')
   const sid = token()
   await db().prepare('INSERT INTO sessions (id) VALUES (?)').bind(sid).run()
   setCookie(SID, sid, { httpOnly: true, secure: true, sameSite: 'lax', path: '/', maxAge: YEAR })

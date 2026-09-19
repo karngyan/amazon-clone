@@ -3,6 +3,8 @@ import { expandCategory } from '#/lib/catalog'
 import type { Address, CartLine, Order, OrderItem, Review, SearchParams } from '#/lib/types'
 import {
   CARD_COLS,
+  allow,
+  clientIp,
   cartOwner,
   clearSid,
   currentUser,
@@ -19,6 +21,10 @@ import {
 const PAGE_SIZE = 16
 const FREE_SHIPPING_MIN = 35
 const TAX_RATE = 0.0825
+
+// Abuse ceilings for a public demo with open sign-up.
+const MAX_USERS = 500
+const SLOW_DOWN = 'Too many attempts. Please wait a few minutes and try again.'
 
 const DELIVERY = {
   free: { label: 'FREE delivery', days: 4, cost: 0 },
@@ -210,6 +216,7 @@ export const addReview = createServerFn({ method: 'POST' })
     const title = data.title.trim().slice(0, 120)
     const body = data.body.trim().slice(0, 4000)
     if (!title || !body) throw new Error('Please add a headline and a written review.')
+    if (!(await allow(`review:${user.id}`, 10, 86400))) throw new Error('You have reached the daily review limit.')
     const bought = await db()
       .prepare(`SELECT 1 AS x FROM order_items oi JOIN orders o ON o.id = oi.order_id WHERE o.user_id = ? AND oi.product_id = ? AND o.status != 'cancelled'`)
       .bind(user.id, data.productId)
@@ -294,7 +301,11 @@ export const signUp = createServerFn({ method: 'POST' })
     const email = data.email.trim().toLowerCase()
     if (!name) return { error: 'Enter your name' }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: 'Enter a valid email address' }
-    if (data.password.length < 6) return { error: 'Passwords must be at least 6 characters' }
+    if (data.password.length < 6 || data.password.length > 200) return { error: 'Passwords must be at least 6 characters' }
+    if (!(await allow(`signup:${clientIp()}`, 5, 3600))) return { error: SLOW_DOWN }
+    const users = await db().prepare('SELECT COUNT(*) AS n FROM users').first<{ n: number }>()
+    if ((users?.n ?? 0) >= MAX_USERS)
+      return { error: 'This demo has reached its sign-up limit. You can still browse and use the cart as a guest.' }
     const exists = await db().prepare('SELECT id FROM users WHERE email = ?').bind(email).first()
     if (exists) return { error: 'An account with this email already exists. Sign in instead.' }
     const { hash, salt } = await hashPassword(data.password)
@@ -310,6 +321,7 @@ export const signIn = createServerFn({ method: 'POST' })
   .validator((d: { email: string; password: string }) => d)
   .handler(async ({ data }) => {
     const email = data.email.trim().toLowerCase()
+    if (!(await allow(`signin:${clientIp()}`, 15, 600))) return { error: SLOW_DOWN }
     const row = await db()
       .prepare('SELECT id, password_hash, salt FROM users WHERE email = ?')
       .bind(email)
@@ -357,6 +369,9 @@ export const saveAddress = createServerFn({ method: 'POST' })
     const user = await requireUser()
     for (const k of ['fullName', 'line1', 'city', 'state', 'zip'] as const)
       if (!data[k]?.trim()) return { error: 'Please fill in all required fields.' }
+    if (Object.values(data).some((v) => typeof v === 'string' && v.length > 200)) return { error: 'One of the fields is too long.' }
+    const count = await db().prepare('SELECT COUNT(*) AS n FROM addresses WHERE user_id = ?').bind(user.id).first<{ n: number }>()
+    if ((count?.n ?? 0) >= 10) return { error: 'You can save up to 10 addresses.' }
     const first = !(await db().prepare('SELECT 1 AS x FROM addresses WHERE user_id = ?').bind(user.id).first())
     const makeDefault = first || !!data.isDefault
     if (makeDefault) await db().prepare('UPDATE addresses SET is_default = 0 WHERE user_id = ?').bind(user.id).run()
@@ -404,6 +419,7 @@ export const placeOrder = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const user = await requireUser()
     const delivery = data.delivery === 'fast' ? 'fast' : 'free'
+    if (!(await allow(`order:${user.id}`, 20, 86400))) return { error: 'You have reached the daily order limit for this demo.' }
     const lines = (await loadCart(`u:${user.id}`)).filter((l) => !l.saved)
     if (!lines.length) return { error: 'Your cart is empty.' }
     const addr = await db().prepare('SELECT * FROM addresses WHERE id = ? AND user_id = ?').bind(data.addressId, user.id).first()
