@@ -86,7 +86,7 @@ a { color: inherit; text-decoration: none; }
   .clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
   .clamp-4 { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
 
-  .img-well { background: #f7f8f8; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .img-well { isolation: isolate; background: #f7f8f8; display: flex; align-items: center; justify-content: center; overflow: hidden; }
   .img-well img { mix-blend-mode: multiply; object-fit: contain; width: 100%; height: 100%; }
 }
 

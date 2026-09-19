@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 
 export function Gallery({ images, title }: { images: string[]; title: string }) {
   const [active, setActive] = useState(0)
@@ -87,7 +88,9 @@ function Lightbox({ images, title, start, onClose }: { images: string[]; title: 
     }
   }, [images.length, onClose])
 
-  return (
+  // Portalled to <body>: the gallery sits in a sticky wrapper, whose stacking
+  // context would otherwise let the sticky buy box paint over the modal.
+  return createPortal(
     <div className="fade-in fixed inset-0 z-[70] flex items-center justify-center bg-[rgba(15,17,17,.7)] p-3 sm:p-8" onClick={onClose}>
       <div
         role="dialog"
@@ -114,6 +117,7 @@ function Lightbox({ images, title, start, onClose }: { images: string[]; title: 
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }
