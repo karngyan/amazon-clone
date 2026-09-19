@@ -211,7 +211,10 @@ export default function Header({ user, cartCount }: { user: User | null; cartCou
           <Link to="/cart" className="nav-hit flex items-end gap-0.5" aria-label={`Cart, ${cartCount} items`}>
             <span className="relative">
               <svg width="40" height="30" viewBox="0 0 40 30" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M2 3h5l5 17h18l4-12" /><circle cx="15" cy="25.500" r="2" fill="#fff" /><circle cx="28" cy="25.500" r="2" fill="#fff" /></svg>
-              <span key={cartCount} className="pop-in absolute left-[17px] top-[-7px] min-w-[18px] text-center text-[16px] font-bold text-now">{cartCount > 99 ? '99+' : cartCount}</span>
+              {/* Basket opening spans x 9-34 of the 40px icon, so the count centres on 21.5px. */}
+              <span className="absolute left-[6.5px] top-[-7px] w-[30px] text-center text-[16px] font-bold leading-5 text-now">
+                <span key={cartCount} className="pop-in inline-block">{cartCount > 99 ? '99+' : cartCount}</span>
+              </span>
             </span>
             <span className="hidden text-[14px] font-bold sm:block">Cart</span>
           </Link>
