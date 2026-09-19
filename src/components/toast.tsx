@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { createContext, useCallback, useContext, useRef, useState } from 'react'
 
-type Toast = { title: string; body?: string; image?: string; href?: string; cta?: string }
+type Toast = { title: string; tone?: 'ok' | 'error'; body?: string; image?: string; href?: string; cta?: string }
 const Ctx = createContext<(t: Toast) => void>(() => {})
 export const useToast = () => useContext(Ctx)
 
@@ -21,8 +21,12 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           <div key={toast.key} className="toast-in pointer-events-auto flex w-full max-w-[380px] items-center gap-3 rounded-lg border border-line bg-white p-3 shadow-[0_8px_24px_rgba(15,17,17,.25)]">
             {toast.image ? <div className="img-well h-14 w-14 flex-none rounded"><img src={toast.image} alt="" /></div> : null}
             <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-1.5 font-bold text-ok">
-                <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8" fill="#007600" /><path d="M4.5 8.2l2.3 2.3 4.7-4.9" stroke="#fff" strokeWidth="1.8" fill="none" strokeLinecap="round" /></svg>
+              <div className={`flex items-center gap-1.5 font-bold ${toast.tone === 'error' ? 'text-[#c40000]' : 'text-ok'}`}>
+                {toast.tone === 'error' ? (
+                  <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8" fill="#c40000" /><path d="M8 4v5M8 11.500v.5" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" /></svg>
+                ) : (
+                  <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8" fill="#007600" /><path d="M4.5 8.2l2.3 2.3 4.7-4.9" stroke="#fff" strokeWidth="1.8" fill="none" strokeLinecap="round" /></svg>
+                )}
                 {toast.title}
               </div>
               {toast.body ? <div className="truncate text-[13px] text-muted">{toast.body}</div> : null}

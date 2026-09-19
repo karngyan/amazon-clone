@@ -78,7 +78,7 @@ export function useAddToCart() {
       await router.invalidate()
       toast({ title: 'Added to cart', body: product.title, image: product.thumbnail, href: '/cart', cta: 'Go to Cart' })
     } catch {
-      toast({ title: 'Could not add to cart', body: 'Please try again.' })
+      toast({ tone: 'error', title: 'Could not add to cart', body: 'Please try again.' })
     } finally {
       setBusy(false)
     }
@@ -97,7 +97,7 @@ export function ProductCard({ p, compactCard = false }: { p: Card; compactCard?:
       </Link>
       <div className="flex flex-1 flex-col gap-1 pt-2">
         <Link to="/dp/$id" params={{ id: String(p.id) }} className="clamp-2 text-[15px] leading-5 hover:text-link-hover">
-          {p.brand ? <span className="font-medium">{p.brand} </span> : null}
+          {p.brand && !p.title.toLowerCase().includes(p.brand.toLowerCase()) ? <span className="font-medium">{p.brand} </span> : null}
           {p.title}
         </Link>
         <Rating value={p.rating} count={p.reviewCount} />

@@ -150,7 +150,7 @@ function ShippingProgress({ subtotal }: { subtotal: number }) {
   if (subtotal >= FREE_SHIPPING_MIN)
     return (
       <p className="flex items-start gap-2 text-[13px] leading-[18px]">
-        <svg className="mt-px flex-none" width="18" height="18" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8" fill="#007600" /><path d="M4.500 8.200l2.300 2.300 4.700-4.900" stroke="#fff" strokeWidth="1.800" fill="none" strokeLinecap="round" /></svg>
+        <svg className="mt-px flex-none" width="18" height="18" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8" fill="#007600" /><path d="M4.5 8.2l2.3 2.3 4.7-4.9" stroke="#fff" strokeWidth="1.8" fill="none" strokeLinecap="round" /></svg>
         <span>
           <span className="text-ok">Your order qualifies for FREE Shipping.</span>{' '}
           <span className="text-muted">Choose this option at checkout.</span>
@@ -224,7 +224,7 @@ function Stepper({ qty, max, title, onChange }: { qty: number; max: number; titl
     <div className="inline-flex h-8 items-center rounded-full border-[3px] border-buy bg-white text-[13px] font-bold" role="group" aria-label={`Quantity of ${title}`}>
       <button className={hit} onClick={() => onChange(qty - 1)} aria-label={qty === 1 ? 'Delete item' : 'Decrease quantity by one'}>
         {qty === 1 ? (
-          <svg width="14" height="15" viewBox="0 0 14 15" fill="none" stroke="#0f1111" strokeWidth="1.500" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M1 3.500h12M5 3.500V1.500h4v2M2.500 3.500l.7 10h7.600l.7-10M5.500 6.500v4.500M8.500 6.500v4.500" /></svg>
+          <svg width="14" height="15" viewBox="0 0 14 15" fill="none" stroke="#0f1111" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M1 3.5h12M5 3.5V1.5h4v2M2.5 3.5l.7 10h7.6l.7-10M5.5 6.5v4.5M8.5 6.5v4.5" /></svg>
         ) : (
           <svg width="12" height="12" viewBox="0 0 12 12" stroke="#0f1111" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M2 6h8" /></svg>
         )}

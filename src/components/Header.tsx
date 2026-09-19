@@ -63,7 +63,8 @@ function SearchBar() {
         aria-label="Search in department"
         value={dept}
         onChange={(e) => setDept(e.target.value)}
-        className="hidden max-w-[150px] cursor-pointer rounded-l-md border-r border-[#cdcdcd] bg-[#e6e6e6] px-2 text-[12px] text-[#555] hover:bg-[#d4d4d4] md:block"
+        style={{ width: dept ? `${(DEPARTMENTS.find((d) => d.slug === dept)?.name.length ?? 3) * 7 + 34}px` : 52 }}
+        className="hidden cursor-pointer rounded-l-md border-r border-[#cdcdcd] bg-[#e6e6e6] px-2 text-[12px] text-[#555] hover:bg-[#d4d4d4] md:block"
       >
         <option value="">All</option>
         {DEPARTMENTS.map((d) => <option key={d.slug} value={d.slug}>{d.name}</option>)}
