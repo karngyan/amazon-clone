@@ -32,7 +32,9 @@ the prompt is recovered verbatim from the transcript with its original timestamp
 
 - Second session (fresh `claude -p` process, started after the hook was installed):
   `.agent-logs/2026-09-19_15-39-28_9f99a9f7-ffe1-4bf9-98cd-b8f7ad832963.md`
-- Interactive session canary: see "Canary 1" below.
+- Interactive session (the one that installed the hook; hooks went live after opening
+  `/hooks`, since `.claude/` did not exist at session start):
+  `.agent-logs/2026-09-19_15-35-38_dec4f7d4-ad4e-4de2-b462-9601f2d093ee.md`
 
 ## Canary 2 — second session, raw
 
@@ -68,7 +70,34 @@ No task in prompt. Send assignment spec, me build.
 
 ## Canary 1 — interactive session, raw
 
-_Pending: to be pasted here once the canary is sent in the interactive session._
+Log file: `.agent-logs/2026-09-19_15-35-38_dec4f7d4-ad4e-4de2-b462-9601f2d093ee.md`
+
+````
+[LOG_ENTRY type=PROMPT num=3 session=dec4f7d4]
+timestamp: 2026-09-19T15:43:54.105Z
+model: claude-fable-5-1
+
+CAPTURE TEST — 8x assignment, Karn
+
+
+[LOG_ENTRY type=RESPONSE num=3 session=dec4f7d4]
+timestamp: 2026-09-19T15:44:01.148Z
+model: claude-fable-5-1
+
+The canary prompt is in the log as entry 3 of `.agent-logs/2026-09-19_15-35-38_dec4f7d4-ad4e-4de2-b462-9601f2d093ee.md`:
+
+```
+[LOG_ENTRY type=PROMPT num=3 session=dec4f7d4]
+timestamp: 2026-09-19T15:43:54.105Z
+model: claude-fable-5-1
+
+CAPTURE TEST — 8x assignment, Karn
+```
+
+Prompts and responses 1 and 2 were also captured and paired, and there is no capture error log. This reply is written as response 3 when the turn ends.
+
+Send `done`, or anything else. On that turn I'll paste the raw canary prompt and response into the "Canary 1" section of `CAPTURE-TEST.md` and commit it with this session's log. After that we can start building.
+````
 
 ## What I tried first that did not work
 
