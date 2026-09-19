@@ -12,7 +12,7 @@
 			"binding": "DB",
 			"database_name": "amazon-clone",
 			// Not a secret: an identifier, useless without account credentials.
-			"database_id": "00000000-0000-0000-0000-000000000000",
+			"database_id": "62f62021-b1c6-4b84-9fd7-155c1ac6e7e1",
 			"migrations_dir": "migrations"
 		}
 	]
