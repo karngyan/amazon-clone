@@ -1,59 +1,62 @@
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import { TanStackDevtools } from '@tanstack/react-devtools'
+import { HeadContent, Link, Outlet, Scripts, createRootRoute, useRouterState } from '@tanstack/react-router'
 import Footer from '../components/Footer'
 import Header from '../components/Header'
+import { ToastProvider } from '../components/toast'
+import { getShell } from '../server/fns'
 
 import appCss from '../styles.css?url'
 
-const THEME_INIT_SCRIPT = `(function(){try{var stored=window.localStorage.getItem('theme');var mode=(stored==='light'||stored==='dark'||stored==='auto')?stored:'auto';var prefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches;var resolved=mode==='auto'?(prefersDark?'dark':'light'):mode;var root=document.documentElement;root.classList.remove('light','dark');root.classList.add(resolved);if(mode==='auto'){root.removeAttribute('data-theme')}else{root.setAttribute('data-theme',mode)}root.style.colorScheme=resolved;}catch(e){}})();`
-
 export const Route = createRootRoute({
+  // Re-runs on router.invalidate(), which is how the cart badge and greeting stay fresh.
+  beforeLoad: async () => getShell(),
   head: () => ({
     meta: [
-      {
-        charSet: 'utf-8',
-      },
-      {
-        name: 'viewport',
-        content: 'width=device-width, initial-scale=1',
-      },
-      {
-        title: 'TanStack Start Starter',
-      },
+      { charSet: 'utf-8' },
+      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      { title: 'Amazon.clone. Spend less. Smile more.' },
+      { name: 'description', content: 'A full-stack Amazon rebuild: search, product pages, cart, checkout, orders.' },
+      { name: 'theme-color', content: '#131921' },
     ],
     links: [
-      {
-        rel: 'stylesheet',
-        href: appCss,
-      },
+      { rel: 'stylesheet', href: appCss },
+      { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' },
     ],
   }),
   shellComponent: RootDocument,
+  component: RootLayout,
+  notFoundComponent: () => (
+    <main id="main" className="mx-auto max-w-[700px] px-4 py-16 text-center">
+      <h1 className="text-[28px] font-bold">Looking for something?</h1>
+      <p className="mt-2 text-muted">We're sorry. The page you entered is not a functioning page on our site.</p>
+      <Link to="/" className="btn btn-buy mt-5">Go to the home page</Link>
+    </main>
+  ),
 })
+
+// Sign-in and checkout use Amazon's stripped-down chrome: no nav, no distractions.
+const BARE = ['/signin', '/register', '/checkout']
+
+function RootLayout() {
+  const { user, cartCount } = Route.useRouteContext()
+  const path = useRouterState({ select: (s) => s.location.pathname })
+  if (BARE.some((p) => path.startsWith(p))) return <Outlet />
+  return (
+    <>
+      <Header user={user} cartCount={cartCount} />
+      <Outlet />
+      <Footer />
+    </>
+  )
+}
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <head>
-        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <HeadContent />
       </head>
-      <body className="font-sans antialiased [overflow-wrap:anywhere] selection:bg-[rgba(79,184,178,0.24)]">
-        <Header />
-        {children}
-        <Footer />
-        <TanStackDevtools
-          config={{
-            position: 'bottom-right',
-          }}
-          plugins={[
-            {
-              name: 'Tanstack Router',
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-          ]}
-        />
+      <body className="font-sans">
+        <ToastProvider>{children}</ToastProvider>
         <Scripts />
       </body>
     </html>

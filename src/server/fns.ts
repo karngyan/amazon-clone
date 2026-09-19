@@ -71,7 +71,7 @@ export const getHome = createServerFn({ method: 'GET' }).handler(async () => {
 const clean = (s: SearchParams): SearchParams => s
 
 export const searchProducts = createServerFn({ method: 'GET' })
-  .inputValidator(clean)
+  .validator(clean)
   .handler(async ({ data }) => {
     const where: string[] = []
     const args: (string | number)[] = []
@@ -136,7 +136,7 @@ export const searchProducts = createServerFn({ method: 'GET' })
   })
 
 export const suggest = createServerFn({ method: 'GET' })
-  .inputValidator((d: { q: string }) => d)
+  .validator((d: { q: string }) => d)
   .handler(async ({ data }) => {
     const q = data.q.trim().toLowerCase()
     if (q.length < 2) return []
@@ -152,7 +152,7 @@ export const suggest = createServerFn({ method: 'GET' })
   })
 
 export const getProduct = createServerFn({ method: 'GET' })
-  .inputValidator((d: { id: number }) => d)
+  .validator((d: { id: number }) => d)
   .handler(async ({ data }) => {
     const row = await db().prepare('SELECT * FROM products p WHERE p.id = ?').bind(data.id).first()
     if (!row) return null
@@ -190,7 +190,7 @@ export const getProduct = createServerFn({ method: 'GET' })
   })
 
 export const getProductsByIds = createServerFn({ method: 'GET' })
-  .inputValidator((d: { ids: number[] }) => d)
+  .validator((d: { ids: number[] }) => d)
   .handler(async ({ data }) => {
     const ids = data.ids.filter(Number.isInteger).slice(0, 20)
     if (!ids.length) return []
@@ -203,7 +203,7 @@ export const getProductsByIds = createServerFn({ method: 'GET' })
   })
 
 export const addReview = createServerFn({ method: 'POST' })
-  .inputValidator((d: { productId: number; rating: number; title: string; body: string }) => d)
+  .validator((d: { productId: number; rating: number; title: string; body: string }) => d)
   .handler(async ({ data }) => {
     const user = await requireUser()
     const rating = Math.min(5, Math.max(1, Math.round(data.rating)))
@@ -239,7 +239,7 @@ async function loadCart(owner: string | null): Promise<CartLine[]> {
 export const getCart = createServerFn({ method: 'GET' }).handler(async () => loadCart(await cartOwner(false)))
 
 export const addToCart = createServerFn({ method: 'POST' })
-  .inputValidator((d: { productId: number; qty?: number }) => d)
+  .validator((d: { productId: number; qty?: number }) => d)
   .handler(async ({ data }) => {
     const owner = (await cartOwner(true))!
     const qty = Math.min(10, Math.max(1, data.qty ?? 1))
@@ -254,7 +254,7 @@ export const addToCart = createServerFn({ method: 'POST' })
   })
 
 export const updateCartItem = createServerFn({ method: 'POST' })
-  .inputValidator((d: { productId: number; qty?: number; saved?: boolean }) => d)
+  .validator((d: { productId: number; qty?: number; saved?: boolean }) => d)
   .handler(async ({ data }) => {
     const owner = await cartOwner(false)
     if (!owner) return { ok: false }
@@ -288,7 +288,7 @@ async function attachSession(userId: number) {
 }
 
 export const signUp = createServerFn({ method: 'POST' })
-  .inputValidator((d: { name: string; email: string; password: string }) => d)
+  .validator((d: { name: string; email: string; password: string }) => d)
   .handler(async ({ data }) => {
     const name = data.name.trim().slice(0, 80)
     const email = data.email.trim().toLowerCase()
@@ -307,7 +307,7 @@ export const signUp = createServerFn({ method: 'POST' })
   })
 
 export const signIn = createServerFn({ method: 'POST' })
-  .inputValidator((d: { email: string; password: string }) => d)
+  .validator((d: { email: string; password: string }) => d)
   .handler(async ({ data }) => {
     const email = data.email.trim().toLowerCase()
     const row = await db()
@@ -352,7 +352,7 @@ async function loadAddresses(userId: number) {
 export const getAddresses = createServerFn({ method: 'GET' }).handler(async () => loadAddresses((await requireUser()).id))
 
 export const saveAddress = createServerFn({ method: 'POST' })
-  .inputValidator((d: Omit<Address, 'id' | 'isDefault'> & { isDefault?: boolean }) => d)
+  .validator((d: Omit<Address, 'id' | 'isDefault'> & { isDefault?: boolean }) => d)
   .handler(async ({ data }) => {
     const user = await requireUser()
     for (const k of ['fullName', 'line1', 'city', 'state', 'zip'] as const)
@@ -368,7 +368,7 @@ export const saveAddress = createServerFn({ method: 'POST' })
   })
 
 export const updateAddress = createServerFn({ method: 'POST' })
-  .inputValidator((d: { id: number; action: 'delete' | 'default' }) => d)
+  .validator((d: { id: number; action: 'delete' | 'default' }) => d)
   .handler(async ({ data }) => {
     const user = await requireUser()
     if (data.action === 'delete') {
@@ -400,7 +400,7 @@ export const getCheckout = createServerFn({ method: 'GET' }).handler(async () =>
 })
 
 export const placeOrder = createServerFn({ method: 'POST' })
-  .inputValidator((d: { addressId: number; delivery: 'free' | 'fast'; paymentLabel: string }) => d)
+  .validator((d: { addressId: number; delivery: 'free' | 'fast'; paymentLabel: string }) => d)
   .handler(async ({ data }) => {
     const user = await requireUser()
     const delivery = data.delivery === 'fast' ? 'fast' : 'free'
@@ -476,7 +476,7 @@ export const getOrders = createServerFn({ method: 'GET' }).handler(async () => {
 })
 
 export const getOrder = createServerFn({ method: 'GET' })
-  .inputValidator((d: { id: string }) => d)
+  .validator((d: { id: string }) => d)
   .handler(async ({ data }) => {
     const user = await requireUser()
     const o = await db().prepare('SELECT * FROM orders WHERE id = ? AND user_id = ?').bind(data.id, user.id).first()
@@ -485,7 +485,7 @@ export const getOrder = createServerFn({ method: 'GET' })
   })
 
 export const cancelOrder = createServerFn({ method: 'POST' })
-  .inputValidator((d: { id: string }) => d)
+  .validator((d: { id: string }) => d)
   .handler(async ({ data }) => {
     const user = await requireUser()
     const o = await db().prepare('SELECT * FROM orders WHERE id = ? AND user_id = ?').bind(data.id, user.id).first()
@@ -512,7 +512,7 @@ export const getList = createServerFn({ method: 'GET' }).handler(async () => {
 })
 
 export const toggleList = createServerFn({ method: 'POST' })
-  .inputValidator((d: { productId: number; on: boolean }) => d)
+  .validator((d: { productId: number; on: boolean }) => d)
   .handler(async ({ data }) => {
     const user = await requireUser()
     if (data.on)
