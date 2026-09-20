@@ -9,7 +9,7 @@ import { getHome } from '#/server/fns'
 
 export const Route = createFileRoute('/')({
   loader: () => getHome(),
-  head: () => ({ meta: [{ title: 'Amazon.clone. Spend less. Smile more.' }] }),
+  head: () => ({ meta: [{ title: 'Demo store - hiring assignment rebuild (not Amazon)' }] }),
   component: Home,
 })
 

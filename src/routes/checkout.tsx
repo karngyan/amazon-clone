@@ -15,7 +15,7 @@ export const Route = createFileRoute('/checkout')({
     if (!data.lines.length) throw redirect({ to: '/cart' })
     return data
   },
-  head: () => ({ meta: [{ title: 'Checkout - Amazon.clone' }] }),
+  head: () => ({ meta: [{ title: 'Checkout - demo store' }] }),
   component: CheckoutPage,
 })
 

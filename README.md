@@ -1,6 +1,9 @@
 # amazon.clone
 
-A 24-hour rebuild of amazon.com. Live at **https://amazon.karngyan.com**.
+A 24-hour rebuild of amazon.com. Live at **https://not-amz-hiring-clone.karngyan.com**.
+
+This is a hiring-assignment demo. It is not Amazon and is not affiliated with Amazon.com, Inc.
+Every page says so, the sign-in pages warn against reusing a real password, and the site is `noindex`.
 
 Browse, search and filter a 194-product catalogue, read and write reviews, add to cart as a
 guest, sign up, check out, track and cancel orders. No real payment is taken and nothing ships.

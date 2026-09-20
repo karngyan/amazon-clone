@@ -22,7 +22,7 @@ export const Route = createFileRoute('/s')({
   }),
   loaderDeps: ({ search }) => search,
   loader: ({ deps }) => searchProducts({ data: deps }),
-  head: ({ match }) => ({ meta: [{ title: `Amazon.clone : ${headingFor(match.search)}` }] }),
+  head: ({ match }) => ({ meta: [{ title: `Demo store : ${headingFor(match.search)}` }] }),
   component: SearchPage,
 })
 

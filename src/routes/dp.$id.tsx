@@ -17,7 +17,7 @@ export const Route = createFileRoute('/dp/$id')({
     return data
   },
   head: ({ loaderData }) => ({
-    meta: loaderData ? [{ title: `Amazon.clone: ${loaderData.product.title}` }] : [],
+    meta: loaderData ? [{ title: `${loaderData.product.title} - demo store` }] : [],
   }),
   component: ProductPage,
 })

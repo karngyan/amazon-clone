@@ -8,7 +8,7 @@ export const Route = createFileRoute('/register')({
   beforeLoad: ({ context, search }) => {
     if (context.user) throw redirect({ href: safeRedirect(search.redirect) ?? '/' })
   },
-  head: () => ({ meta: [{ title: 'Amazon.clone Registration' }] }),
+  head: () => ({ meta: [{ title: 'Create account - demo store (not Amazon)' }] }),
   component: Register,
 })
 
@@ -111,7 +111,7 @@ function Register() {
             )
           })}
           <button type="submit" className="btn btn-buy btn-block mt-1" disabled={pending}>
-            {pending ? 'Creating your account…' : 'Create your Amazon account'}
+            {pending ? 'Creating your account…' : 'Create your demo account'}
           </button>
         </form>
         <p className="mt-4 text-[12px] leading-[18px]">

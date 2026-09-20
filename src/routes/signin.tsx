@@ -8,7 +8,7 @@ export const Route = createFileRoute('/signin')({
   beforeLoad: ({ context, search }) => {
     if (context.user) throw redirect({ href: safeRedirect(search.redirect) ?? '/' })
   },
-  head: () => ({ meta: [{ title: 'Amazon.clone Sign-In' }] }),
+  head: () => ({ meta: [{ title: 'Sign in - demo store (not Amazon)' }] }),
   component: SignIn,
 })
 
@@ -86,8 +86,8 @@ function SignIn() {
         </div>
       </div>
 
-      <AuthDivider>New to Amazon?</AuthDivider>
-      <Link to="/register" search={search} className="btn btn-plain btn-block">Create your Amazon account</Link>
+      <AuthDivider>New here?</AuthDivider>
+      <Link to="/register" search={search} className="btn btn-plain btn-block">Create a demo account with email</Link>
     </AuthShell>
   )
 }

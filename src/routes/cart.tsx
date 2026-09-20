@@ -11,7 +11,7 @@ const FREE_SHIPPING_MIN = 35
 
 export const Route = createFileRoute('/cart')({
   loader: () => getCart(),
-  head: () => ({ meta: [{ title: 'Amazon.clone Shopping Cart' }] }),
+  head: () => ({ meta: [{ title: 'Shopping Cart - demo store' }] }),
   component: CartPage,
 })
 
